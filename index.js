@@ -44,6 +44,22 @@ class Parser {
 	map(fun) {
 		return new MapParser(this, fun);
 	}
+
+	flatMap(fun) {
+		return new FlatMapParser(this, fun);
+	}
+}
+
+class FlatMapParser {
+	constructor(parser, fun) {
+		this.parser = parser;
+		this.fun = fun;
+	}
+	parse(input) {
+		const r = this.parser.parse(input);
+		if(!r.isSuccess()) return r;
+		return this.fun(r.value).parse(r.next);
+	}
 }
 
 class MapParser {

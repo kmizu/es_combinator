@@ -28,9 +28,21 @@ test("Hello and World", t => {
 });
 
 
-test("(Hello and World) map", t => {
+test("(Hello and World).map", t => {
   const p = c.s("Hello").cat(c.s("World")).map((x) => [x, x].toString());
 	const r = p.parse("HelloWorld");
 	t.true(r.isSuccess());
 	t.true(r.value == [["Hello", "World"], ["Hello", "World"]].toString());
+});
+
+
+test("Hello.flatMap(v => World)", t => {
+	const p = c.s("Hello").flatMap((v) => {
+		return c.s("World");
+	});
+	let r = p.parse("Hello");
+	t.true(!r.isSuccess());
+	r = p.parse("HelloWorld");
+	t.true(r.isSuccess());
+	t.true(r.value == "World");
 });

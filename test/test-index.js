@@ -58,3 +58,29 @@ test("[0-9]+", t => {
 	t.true(!(r.value === "100"));
 	t.true(r.value === 100);
 });
+test("J.rep", t => {
+	const p = c.s("J").rep();
+	let r = p.parse("JJJJ");
+	t.true(r.isSuccess());
+	t.true(r.value.toString() == ["J", "J", "J", "J"].toString())
+});
+test("calculator", t => {
+	const E = () => A();
+	const A = () => 
+		c.f(() => M()).cat(((c.s("+").cat(c.f(() => M()))).or(c.s("-").cat(c.f(() => M())))).rep());
+	const M = () => 
+		c.f(() => P()).cat(((c.s("*").cat(c.f(() => P()))).or(c.s("/").cat(c.f(() => M())))).rep());
+  const P = () =>
+	  (c.s("(").cat(E()).cat(c.s(")"))).or(c.f(() => N()));
+  const N = () =>
+	  c.r("[0-9]+").map((n) => parseInt(n));
+  const r1 = E().parse("111");
+	const r2 = E().parse("222");
+	t.true(r1.isSuccess());
+	t.true(r2.isSuccess());
+	const r3 = E().parse("A");
+	t.true(!r3.isSuccess());
+	const r4 = E().parse("(1+2*3)+4");
+	t.true(r4.isSuccess());
+
+});

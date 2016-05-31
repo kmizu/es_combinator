@@ -48,6 +48,27 @@ class Parser {
 	flatMap(fun) {
 		return new FlatMapParser(this, fun);
 	}
+
+	rep() {
+		return new RepeatParser(this);
+	}
+}
+
+class RepeatParser extends Parser {
+	constructor(parser) {
+		super();
+		this.parser = parser;
+	}
+	parse(input) {
+		let rest = input
+		let values = []
+		while(true) {
+			let r = this.parser.parse(rest);
+			if(!r.isSuccess()) return new ParseSuccess(values, rest);
+			values.push(r.value);
+			rest = r.next;
+		}
+	}
 }
 
 class RegExpParser extends Parser {
@@ -59,7 +80,7 @@ class RegExpParser extends Parser {
 	parse(input) {
 		const regex = new RegExp(this.regexString, "g");
 		const array = regex.exec(input);
-		if(array.index == 0) {
+		if(array != null && array.index == 0) {
 			return new ParseSuccess(array[0], input.substring(array[0].length))
 		}else {
 			return new ParseFailure(input);
@@ -143,6 +164,16 @@ class StringParser extends Parser {
 		}
 	}
 }
+class DelayedParser extends Parser {
+	constructor(fun) {
+		super();
+		this.fun = fun;
+	}
+	parse(input) {
+		const fun = this.fun
+		return fun().parse(input);
+	}
+}
 
 class ESCombinator {
   s(literal) {
@@ -150,6 +181,9 @@ class ESCombinator {
   }
 	r(regexString) {
 		return new RegExpParser(regexString);
+	}
+	f(fun) {
+		return new DelayedParser(fun);
 	}
 }
 module.exports=ESCombinator;

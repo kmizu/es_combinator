@@ -50,6 +50,23 @@ class Parser {
 	}
 }
 
+class RegexParser extends Parser {
+	constructor(regexString) {
+		super();
+		this.regexString = regexString;
+	}
+
+	parse(input) {
+		const regex = new RegExp(this.regexString, "g");
+		const array = regex.exec(input);
+		if(array.index == 0) {
+			return new ParseSuccess(array[0], input.substring(array[0].length))
+		}else {
+			return new ParseFailure(input);
+		}
+	}
+}
+
 class FlatMapParser {
 	constructor(parser, fun) {
 		this.parser = parser;
@@ -87,7 +104,6 @@ class OrParser extends Parser {
 		if(r1.isSuccess()) {
 			return r1;
 		}else{
-			util.log(r1);
 		  return this.rhs.parse(input);
 		}
 	}
@@ -123,7 +139,7 @@ class StringParser extends Parser {
 		if(input.startsWith(this.literal)) {
 			return new ParseSuccess(this.literal, input.substring(this.literal.length));
 		} else {
-			return new ParseFailure(this.input);
+			return new ParseFailure(input);
 		}
 	}
 }
@@ -132,5 +148,8 @@ class ESCombinator {
   s(literal) {
 		return new StringParser(literal);
   }
+	r(regexString) {
+		return new RegexParser(regexString);
+	}
 }
 module.exports=ESCombinator;

@@ -46,3 +46,15 @@ test("Hello.flatMap(v => World)", t => {
 	t.true(r.isSuccess());
 	t.true(r.value == "World");
 });
+
+test("[0-9]+", t => {
+	const p1 = c.r("[0-9]+");
+	let r = p1.parse("100");
+	t.true(r.isSuccess());
+	t.true(r.value === "100");
+	const p2 = c.r("[0-9]+").map(x => parseInt(x));
+	r = p2.parse("100");
+	t.true(r.isSuccess());
+	t.true(!(r.value === "100"));
+	t.true(r.value === 100);
+});

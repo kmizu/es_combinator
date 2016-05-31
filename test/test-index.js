@@ -26,3 +26,11 @@ test("Hello and World", t => {
 	t.true(!p.parse("Hello").isSuccess());
 	t.true(!p.parse("WORLD").isSuccess());
 });
+
+
+test("(Hello and World) map", t => {
+  const p = c.s("Hello").cat(c.s("World")).map((x) => [x, x].toString());
+	const r = p.parse("HelloWorld");
+	t.true(r.isSuccess());
+	t.true(r.value == [["Hello", "World"], ["Hello", "World"]].toString());
+});

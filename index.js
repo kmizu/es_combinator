@@ -6,6 +6,7 @@ class ParseResult {
 		this.next = next;
 	}
 }
+
 class ParseSuccess extends ParseResult {
 	constructor(value, next) {
 		super(next);
@@ -39,7 +40,25 @@ class Parser {
 	cat(rhs) {
 		return new CatParser(this, rhs);
 	}
+
+	map(fun) {
+		return new MapParser(this, fun);
+	}
 }
+
+class MapParser {
+	constructor(parser, fun) {
+		this.parser = parser;
+		this.fun = fun;
+	}
+
+	parse(input) {
+		const r = this.parser.parse(input);
+		if(!r.isSuccess()) return r;
+		return new ParseSuccess(this.fun(r.value), r.next);
+	}
+}
+
 
 class OrParser extends Parser {
 	constructor(lhs, rhs) {
@@ -50,7 +69,6 @@ class OrParser extends Parser {
 	parse(input) {
 		const r1 = this.lhs.parse(input);
 		if(r1.isSuccess()) {
-			util.log(r1);
 			return r1;
 		}else{
 			util.log(r1);

@@ -4,7 +4,7 @@
   "description": "A ES2015 Parser Combinator Library",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava -v"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/kmizu/es_copmbinator#readme",
   "devDependencies": {
+    "ava": "^0.15.1",
     "babel-preset-es2015": "^6.9.0",
     "babelify": "^7.3.0"
   }

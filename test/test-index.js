@@ -1,9 +1,28 @@
 "use strict";
 import test from 'ava';
 import ESCombinator from '../index';
+import util from 'util';
 
-const combinator = new ESCombinator();
+const c = new ESCombinator();
 
-test("hello", t => {
-	combinator.hello();
+test("Hello, World!", t => {
+  const p = c.s("Hello, World!");
+	t.true(p.parse("Hello, World!").isSuccess());
+	t.true(!p.parse("Hello, World?").isSuccess());
+});
+
+test("Hello or World", t => {
+  const p = c.s("Hello").or(c.s("World"));
+	t.true(p.parse("Hello").isSuccess());
+	t.true(p.parse("World").isSuccess());
+	t.true(!p.parse("HELLO").isSuccess());
+	t.true(!p.parse("WORLD").isSuccess());
+});
+
+test("Hello and World", t => {
+  const p = c.s("Hello").cat(c.s("World"));
+	t.true(p.parse("HelloWorld").isSuccess());
+	t.true(!p.parse("World").isSuccess());
+	t.true(!p.parse("Hello").isSuccess());
+	t.true(!p.parse("WORLD").isSuccess());
 });

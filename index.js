@@ -50,7 +50,7 @@ class Parser {
 	}
 }
 
-class RegexParser extends Parser {
+class RegExpParser extends Parser {
 	constructor(regexString) {
 		super();
 		this.regexString = regexString;
@@ -149,7 +149,7 @@ class ESCombinator {
 		return new StringParser(literal);
   }
 	r(regexString) {
-		return new RegexParser(regexString);
+		return new RegExpParser(regexString);
 	}
 }
 module.exports=ESCombinator;

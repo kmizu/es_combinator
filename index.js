@@ -60,8 +60,8 @@ class RepeatParser extends Parser {
     this.parser = parser;
   }
   parse(input) {
-    let rest = input
-    let values = []
+    let rest = input;
+    let values = [];
     while(true) {
       let r = this.parser.parse(rest);
       if(!r.isSuccess()) return new ParseSuccess(values, rest);
@@ -88,8 +88,9 @@ class RegExpParser extends Parser {
   }
 }
 
-class FlatMapParser {
+class FlatMapParser extends Parser {
   constructor(parser, fun) {
+		super();
     this.parser = parser;
     this.fun = fun;
   }
@@ -100,8 +101,9 @@ class FlatMapParser {
   }
 }
 
-class MapParser {
+class MapParser extends Parser {
   constructor(parser, fun) {
+		super();
     this.parser = parser;
     this.fun = fun;
   }
@@ -185,5 +187,24 @@ class ESCombinator {
   f(fun) {
     return new DelayedParser(fun);
   }
+  chainlI(first, p, q) {
+    const value = first.cat((q.cat(p).rep())).map((value) => {
+      const x = value[0];
+      const xs = value[1];
+			let a = x;
+			while(xs.length > 0) {
+				let f = xs[0][0];
+				let b = xs[0][1];
+				a = f(a, b);
+				xs.shift();
+			}
+			return a;
+    });
+		return value;
+  }
+	chainl(p, q) {
+		return this.chainlI(p, p, q);
+	}
 }
+
 module.exports=ESCombinator;

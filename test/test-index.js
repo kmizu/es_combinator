@@ -64,23 +64,55 @@ test("J.rep", t => {
   t.true(r.isSuccess());
   t.true(r.value.toString() == ["J", "J", "J", "J"].toString())
 });
+test("chainl", t => {
+  const Q = c.s("+").map((op) => (lhs, rhs) => lhs + rhs);
+  const R = c.s("-").map((op) => (lhs, rhs) => lhs - rhs);
+  const E = () => c.chainl(c.f(() => P()), (Q.or(R)));
+  const P = () => c.r("[0-9]+").map((x) => parseInt(x));
+  const p = E();
+  let r1 = p.parse("100");
+  t.true(r1.isSuccess());
+  t.true(r1.value === 100);
+  r1 = p.parse("100+200-50");
+  t.true(r1.isSuccess());
+  t.true(r1.next === "");
+  t.true(r1.value === 250);
+});
 test("calculator", t => {
   const E = () => A();
   const A = () => 
-    c.f(() => M()).cat(((c.s("+").cat(c.f(() => M()))).or(c.s("-").cat(c.f(() => M())))).rep());
+    c.chainl(
+      c.f(() => M()),
+      (
+       c.s("+").map((op) => (lhs, rhs) => lhs + rhs)
+      ).or(
+       c.s("-").map((op) => (lhs, rhs) => lhs - rhs)
+      )
+    );
   const M = () => 
-    c.f(() => P()).cat(((c.s("*").cat(c.f(() => P()))).or(c.s("/").cat(c.f(() => M())))).rep());
+    c.chainl(
+      c.f(() => P()),
+      (
+       c.s("*").map((op) => (lhs, rhs) => lhs * rhs)).or(
+       c.s("/").map((op) => (lhs, rhs) => lhs / rhs)
+      )
+    );
   const P = () =>
-    (c.s("(").cat(E()).cat(c.s(")"))).or(c.f(() => N()));
+    (c.s("(").cat(c.f(() => E())).cat(c.s(")"))).map((values) => {
+      return values[0][1];
+    }).or(c.f(() => N()));
   const N = () =>
     c.r("[0-9]+").map((n) => parseInt(n));
   const r1 = E().parse("111");
   const r2 = E().parse("222");
   t.true(r1.isSuccess());
   t.true(r2.isSuccess());
+  t.true(r1.value === 111);
+  t.true(r2.value === 222);
   const r3 = E().parse("A");
   t.true(!r3.isSuccess());
-  const r4 = E().parse("(1+2*3)+4");
+  const r4 = E().parse("(1+2*3)*4");
   t.true(r4.isSuccess());
+  t.true(r4.value === 28);
 
 });

@@ -52,6 +52,28 @@ class Parser {
   rep() {
     return new RepeatParser(this);
   }
+
+  chainl(q) {
+  }
+
+  chainlI(p, q) {
+    const value = this.cat((q.cat(p).rep())).map((value) => {
+      const x = value[0];
+      const xs = value[1];
+      let a = x;
+      while(xs.length > 0) {
+        let f = xs[0][0];
+        let b = xs[0][1];
+        a = f(a, b);
+        xs.shift();
+      }
+      return a;
+    });
+    return value;
+  }
+  chainl(q) {
+    return this.chainlI(this, q);
+  }
 }
 
 class RepeatParser extends Parser {
@@ -187,23 +209,9 @@ class ESCombinator {
   f(fun) {
     return new DelayedParser(fun);
   }
-  chainlI(first, p, q) {
-    const value = first.cat((q.cat(p).rep())).map((value) => {
-      const x = value[0];
-      const xs = value[1];
-      let a = x;
-      while(xs.length > 0) {
-        let f = xs[0][0];
-        let b = xs[0][1];
-        a = f(a, b);
-        xs.shift();
-      }
-      return a;
-    });
-    return value;
-  }
+
   chainl(p, q) {
-    return this.chainlI(p, p, q);
+    return p.chainl(q);
   }
 }
 

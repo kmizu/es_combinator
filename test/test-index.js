@@ -79,10 +79,11 @@ test("chainl", t => {
   t.true(r1.value === 250);
 });
 test("calculator", t => {
+  class Hello {
+  }
   const E = () => A();
   const A = () => 
-    c.chainl(
-      c.f(() => M()),
+    c.f(() => M()).chainl(
       (
        c.s("+").map((op) => (lhs, rhs) => lhs + rhs)
       ).or(
@@ -90,8 +91,7 @@ test("calculator", t => {
       )
     );
   const M = () => 
-    c.chainl(
-      c.f(() => P()),
+    c.f(() => P()).chainl(
       (
        c.s("*").map((op) => (lhs, rhs) => lhs * rhs)).or(
        c.s("/").map((op) => (lhs, rhs) => lhs / rhs)

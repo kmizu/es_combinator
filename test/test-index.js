@@ -4,6 +4,7 @@ import ESCombinator from '../index';
 import util from 'util';
 
 const c = new ESCombinator();
+const f = c.f.bind(this);
 
 test("Hello, World!", t => {
   const p = c.s("Hello, World!");
@@ -67,7 +68,7 @@ test("J.rep", t => {
 test("chainl", t => {
   const Q = c.s("+").map((op) => (lhs, rhs) => lhs + rhs);
   const R = c.s("-").map((op) => (lhs, rhs) => lhs - rhs);
-  const E = () => c.chainl(c.f(() => P()), (Q.or(R)));
+  const E = () => c.chainl(f(() => P()), (Q.or(R)));
   const P = () => c.r("[0-9]+").map((x) => parseInt(x));
   const p = E();
   let r1 = p.parse("100");
@@ -83,7 +84,7 @@ test("calculator", t => {
   }
   const E = () => A();
   const A = () => 
-    c.f(() => M()).chainl(
+    f(() => M()).chainl(
       (
        c.s("+").map((op) => (lhs, rhs) => lhs + rhs)
       ).or(
@@ -91,16 +92,16 @@ test("calculator", t => {
       )
     );
   const M = () => 
-    c.f(() => P()).chainl(
+    f(() => P()).chainl(
       (
        c.s("*").map((op) => (lhs, rhs) => lhs * rhs)).or(
        c.s("/").map((op) => (lhs, rhs) => lhs / rhs)
       )
     );
   const P = () =>
-    (c.s("(").cat(c.f(() => E())).cat(c.s(")"))).map((values) => {
+    (c.s("(").cat(f(() => E())).cat(c.s(")"))).map((values) => {
       return values[0][1];
-    }).or(c.f(() => N()));
+    }).or(f(() => N()));
   const N = () =>
     c.r("[0-9]+").map((n) => parseInt(n));
   const r1 = E().parse("111");
@@ -114,5 +115,7 @@ test("calculator", t => {
   const r4 = E().parse("(1+2*3)*4");
   t.true(r4.isSuccess());
   t.true(r4.value === 28);
+  const r5 = E().parse("(3+2*4)/3");
+  t.true(Math.floor(r5.value)=== 3);
 
 });

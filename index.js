@@ -90,7 +90,7 @@ class RegExpParser extends Parser {
 
 class FlatMapParser extends Parser {
   constructor(parser, fun) {
-		super();
+    super();
     this.parser = parser;
     this.fun = fun;
   }
@@ -103,7 +103,7 @@ class FlatMapParser extends Parser {
 
 class MapParser extends Parser {
   constructor(parser, fun) {
-		super();
+    super();
     this.parser = parser;
     this.fun = fun;
   }
@@ -191,20 +191,20 @@ class ESCombinator {
     const value = first.cat((q.cat(p).rep())).map((value) => {
       const x = value[0];
       const xs = value[1];
-			let a = x;
-			while(xs.length > 0) {
-				let f = xs[0][0];
-				let b = xs[0][1];
-				a = f(a, b);
-				xs.shift();
-			}
-			return a;
+      let a = x;
+      while(xs.length > 0) {
+        let f = xs[0][0];
+        let b = xs[0][1];
+        a = f(a, b);
+        xs.shift();
+      }
+      return a;
     });
-		return value;
+    return value;
   }
-	chainl(p, q) {
-		return this.chainlI(p, p, q);
-	}
+  chainl(p, q) {
+    return this.chainlI(p, p, q);
+  }
 }
 
 module.exports=ESCombinator;

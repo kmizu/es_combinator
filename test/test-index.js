@@ -82,9 +82,9 @@ test("chainl", t => {
 test("calculator", t => {
   class Hello {
   }
-  const E = () => A();
+  const E = () => f(A);
   const A = () => 
-    f(() => M()).chainl(
+    f(M).chainl(
       (
        c.s("+").map((op) => (lhs, rhs) => lhs + rhs)
       ).or(
@@ -92,16 +92,16 @@ test("calculator", t => {
       )
     );
   const M = () => 
-    f(() => P()).chainl(
+    f(P).chainl(
       (
        c.s("*").map((op) => (lhs, rhs) => lhs * rhs)).or(
        c.s("/").map((op) => (lhs, rhs) => lhs / rhs)
       )
     );
   const P = () =>
-    (c.s("(").cat(f(() => E())).cat(c.s(")"))).map((values) => {
+    (c.s("(").cat(f(E))).cat(c.s(")")).map((values) => {
       return values[0][1];
-    }).or(f(() => N()));
+    }).or(f(N));
   const N = () =>
     c.r("[0-9]+").map((n) => parseInt(n));
   const r1 = E().parse("111");

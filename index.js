@@ -209,7 +209,9 @@ class ESCombinator {
   f(fun) {
     return new DelayedParser(fun);
   }
-
+  rule(fun) {
+    return new DelayedParser(fun);
+  }
   chainl(p, q) {
     return p.chainl(q);
   }

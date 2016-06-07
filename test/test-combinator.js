@@ -1,6 +1,6 @@
 "use strict";
 import test from 'ava';
-import ESCombinator from '../index';
+import ESCombinator from '../combinator';
 import util from 'util';
 
 const c = new ESCombinator();
@@ -69,13 +69,12 @@ test("J.rep", t => {
 test("chainl", t => {
   const Q = c.s("+").map((op) => (lhs, rhs) => lhs + rhs);
   const R = c.s("-").map((op) => (lhs, rhs) => lhs - rhs);
-  const E = () => c.chainl(f(() => P()), (Q.or(R)));
-  const P = () => c.r("[0-9]+").map((x) => parseInt(x));
-  const p = E();
-  let r1 = p.parse("100");
+  const E = rule(() => P.chainl(Q.or(R)));
+  const P = rule(() => c.r("[0-9]+").map((x) => parseInt(x)));
+  let r1 = E.parse("100");
   t.true(r1.isSuccess());
   t.true(r1.value === 100);
-  r1 = p.parse("100+200-50");
+  r1 = E.parse("100+200-50");
   t.true(r1.isSuccess());
   t.true(r1.next === "");
   t.true(r1.value === 250);
